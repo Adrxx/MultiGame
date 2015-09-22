@@ -16,6 +16,7 @@ public class movercam : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-        if (tra.position.y>=tracam.position.y+4) tracam.position=new Vector2(tracam.position.x, (tra.position.y-3)*Time.deltaTime);
+       if (tra.position.y>=tracam.position.y+4) tracam.position=new Vector3(tracam.position.x, tra.position.y-4,-10);
 	}
 }
+ 
