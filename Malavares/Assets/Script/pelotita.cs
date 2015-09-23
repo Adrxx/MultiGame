@@ -23,6 +23,7 @@ public class pelotita : MonoBehaviour {
         rb = this.GetComponent<Rigidbody2D>(); //inicializar rigid body
         rb.isKinematic=true; //cancela el movimiento inicial
         lin = this.GetComponent<LineRenderer>(); //inicializa la linea
+        lin.transform.position= new Vector3(lin.transform.position.x, lin.transform.position.y, 0);
         cam = FindObjectOfType<Camera>(); //inicializa la camara
         col = this.GetComponent<Collider2D>();
         col.isTrigger=true;
@@ -51,7 +52,7 @@ public class pelotita : MonoBehaviour {
     void OnCollisionEnter2D(Collision2D other) {
         if (other.gameObject.tag == "Pelotita") {
             if (destr) { //si el objeto actual es destructible, se destruye
-                Destroy(this);
+                Destroy(gameObject);
             }
             else{  //si el objeto actual no es destructible, destruye el contrario
                 Destroy(other.gameObject);
@@ -70,13 +71,13 @@ public class pelotita : MonoBehaviour {
         }
         next = rb.velocity;
         if (click){
-            piv1 = new Vector3(this.transform.position.x, this.transform.position.y, this.transform.position.z); //crea el primer pivote para la linea
+            piv1 = new Vector3(this.transform.position.x, this.transform.position.y, 0); //crea el primer pivote para la linea
             piv2 = cam.ScreenToWorldPoint(Input.mousePosition); //crea el segundo pivote para la linea
             piv2.z = 0;
             lin.SetPosition(0, piv1); //crea la linea
             lin.SetPosition(1, piv2); //crea la linea
         }
-        if (.5 > Time.timeSinceLevelLoad - inter && Time.timeSinceLevelLoad - inter > .4 && !rb.isKinematic && !cread && !destr){
+        if (.8 > Time.timeSinceLevelLoad - inter && Time.timeSinceLevelLoad - inter > .7 && !rb.isKinematic && !cread && !destr){
             cread = true; //declara que se ha creado la siguiente pelotita
             destr = true; //hace esta pelota destructible
             Sprite nuevo = (Sprite)Instantiate(this, new Vector2(cam.transform.position.x, cam.transform.position.y-2), transform.rotation); //crea el siguiente objeto

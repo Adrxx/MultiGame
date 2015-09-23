@@ -70,6 +70,7 @@
   <ItemGroup>
     <Compile Include="Assets\Script\pelotita.cs" />
     <Compile Include="Assets\Script\puntaje.cs" />
+    <Compile Include="Assets\Script\scroll.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\SyntaxTree\UnityVS\2015\UnityVS.CSharp.targets" />
 </Project>
