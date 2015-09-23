@@ -50,11 +50,10 @@ public class pelotita : MonoBehaviour {
 
     void OnCollisionEnter2D(Collision2D other) {
         if (other.gameObject.tag == "Pelotita") {
-            if (destr) {
+            if (destr) { //si el objeto actual es destructible, se destruye
                 Destroy(this);
             }
-            else
-            {  
+            else{  //si el objeto actual no es destructible, destruye el contrario
                 Destroy(other.gameObject);
                 rb.velocity = next;
             }
@@ -77,10 +76,10 @@ public class pelotita : MonoBehaviour {
             lin.SetPosition(0, piv1); //crea la linea
             lin.SetPosition(1, piv2); //crea la linea
         }
-        if (.5 > Time.timeSinceLevelLoad - inter && Time.timeSinceLevelLoad - inter > .4 && !rb.isKinematic && !cread){
+        if (.5 > Time.timeSinceLevelLoad - inter && Time.timeSinceLevelLoad - inter > .4 && !rb.isKinematic && !cread && !destr){
             cread = true; //declara que se ha creado la siguiente pelotita
             destr = true; //hace esta pelota destructible
-            Sprite nuevo = (Sprite)Instantiate(this, new Vector2(cam.transform.position.x, cam.transform.position.y-2), transform.rotation);
+            Sprite nuevo = (Sprite)Instantiate(this, new Vector2(cam.transform.position.x, cam.transform.position.y-2), transform.rotation); //crea el siguiente objeto
         }
     }
 }
