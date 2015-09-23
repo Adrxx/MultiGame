@@ -111,6 +111,22 @@ public class pelotita : MonoBehaviour {
     }
 
     void Update() {
+        int count = GameObject.FindGameObjectsWithTag("Pelotita").Length;
+        if (.8 > Time.timeSinceLevelLoad - inter && Time.timeSinceLevelLoad - inter > .7 && !rb.isKinematic && !cread && !destr && count < 2)
+        {
+            cread = true; //declara que se ha creado la siguiente pelotita
+            destr = true; //hace esta pelota destructible
+            Sprite nuevo = (Sprite)Instantiate(this, new Vector2(cam.transform.position.x, cam.transform.position.y - 2), transform.rotation); //crea el siguiente objeto
+
+        }
+
+        if (.8 > Time.timeSinceLevelLoad - inter && Time.timeSinceLevelLoad - inter > .7 && !rb.isKinematic && !cread && !destr && count<2){
+            cread = true; //declara que se ha creado la siguiente pelotita
+            destr = true; //hace esta pelota destructible
+            Sprite nuevo = (Sprite)Instantiate(this, new Vector2(cam.transform.position.x, cam.transform.position.y-2), transform.rotation); //crea el siguiente objeto
+            
+        }
+
         if (this.transform.position.y < cam.transform.position.y - 5) {//reinicia el nivel si se cumple la condición de derrota
             a[2].Play();
             Application.LoadLevel("Malavares");
@@ -130,12 +146,12 @@ public class pelotita : MonoBehaviour {
             lin.SetPosition(0, piv1); //crea la linea
             lin.SetPosition(1, piv2); //crea la linea
         }
-        int count = GameObject.FindGameObjectsWithTag("Pelotita").Length;
-        if (.8 > Time.timeSinceLevelLoad - inter && Time.timeSinceLevelLoad - inter > .7 && !rb.isKinematic && !cread && !destr && count<2){
+        
+        /*if (.8 > Time.timeSinceLevelLoad - inter && Time.timeSinceLevelLoad - inter > .7 && !rb.isKinematic && !cread && !destr && count<2){
             cread = true; //declara que se ha creado la siguiente pelotita
             destr = true; //hace esta pelota destructible
             Sprite nuevo = (Sprite)Instantiate(this, new Vector2(cam.transform.position.x, cam.transform.position.y-2), transform.rotation); //crea el siguiente objeto
             
-        }
+        }*/
     }
 }
