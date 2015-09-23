@@ -42,7 +42,7 @@ public class pelotita : MonoBehaviour {
         lin.transform.position = new Vector3(lin.transform.position.x, lin.transform.position.y, 0); //mueve el line renderer
         cam = FindObjectOfType<Camera>(); //inicializa la camara
         col = this.GetComponent<Collider2D>(); //obtiene el collider
-        col.isTrigger = true; //elimina collisiones mientras se apunta
+        col.isTrigger = true;
         rnd = this.GetComponent<SpriteRenderer>();
         if (this.transform.localScale.x > .03) this.transform.localScale = new Vector3(this.transform.localScale.x - redox, this.transform.localScale.y - redox, 1);
         sprite = chooseSprite();
@@ -78,8 +78,8 @@ public class pelotita : MonoBehaviour {
     void OnMouseUp() {
         if (rb.isKinematic)
         {
-            a[3].Play();
             col.isTrigger = false;
+            a[3].Play();
             click = false;
             rb.isKinematic = false; //activa el movimiento
             pos2 = Input.mousePosition;  //toma el segundo pivote para el drag
@@ -94,24 +94,27 @@ public class pelotita : MonoBehaviour {
     void OnCollisionEnter2D(Collision2D other) {
         if (other.gameObject.tag == "Pelotita")
         {
+            rb.velocity = next;
             if (destr)
-            { //si el objeto actual es destructible, se destruye
-                Destroy(gameObject);
-                a[4].Play();
+                { //si el objeto actual es destructible, se destruye
+                    Destroy(gameObject);
+                    a[4].Play();
+                }
+                else
+                {  //si el objeto actual no es destructible, destruye el contrario
+                    Destroy(other.gameObject);
+                }
             }
-            else
-            {  //si el objeto actual no es destructible, destruye el contrario
-                Destroy(other.gameObject);
-                rb.velocity = next;
-            }
-        }
-        else {
+        
+        else
+        {
             if (other.gameObject.tag == "bund") a[0].Play();
         }
     }
 
     void Update() {
         int count = GameObject.FindGameObjectsWithTag("Pelotita").Length;
+        if (rb.isKinematic) Physics2D.IgnoreCollision(col, col, true);
         if (.8 > Time.timeSinceLevelLoad - inter && Time.timeSinceLevelLoad - inter > .7 && !rb.isKinematic && !cread && !destr && count < 2)
         {
             cread = true; //declara que se ha creado la siguiente pelotita
@@ -147,11 +150,5 @@ public class pelotita : MonoBehaviour {
             lin.SetPosition(1, piv2); //crea la linea
         }
         
-        /*if (.8 > Time.timeSinceLevelLoad - inter && Time.timeSinceLevelLoad - inter > .7 && !rb.isKinematic && !cread && !destr && count<2){
-            cread = true; //declara que se ha creado la siguiente pelotita
-            destr = true; //hace esta pelota destructible
-            Sprite nuevo = (Sprite)Instantiate(this, new Vector2(cam.transform.position.x, cam.transform.position.y-2), transform.rotation); //crea el siguiente objeto
-            
-        }*/
     }
 }
