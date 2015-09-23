@@ -16,7 +16,8 @@ public class scroll : MonoBehaviour {
 	void Update () {
         poscam = cam.transform.position.y;
         this.transform.position = new Vector3(cam.transform.position.x, poscam,10);
-        offset = new Vector2(cam.transform.position.x, poscam);
+
+        offset = new Vector2(cam.transform.position.x, poscam*0.1f);
         rend.material.mainTextureOffset = offset;
 	}
 }

@@ -17,7 +17,7 @@ public class pelotita : MonoBehaviour {
     private SpriteRenderer rnd;
     private GameObject au;
     private AudioSource[] a;
-    private float escalar = .2f; //escalar para el vector de velocidad de disparo
+    private float escalar = .12f; //escalar para el vector de velocidad de disparo
     private float inter; //intervalo de tiempo para la creación de la siguiente pelotita
     private float redox;
     public float start;
