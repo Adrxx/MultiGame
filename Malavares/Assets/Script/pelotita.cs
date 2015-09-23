@@ -22,6 +22,7 @@ public class pelotita : MonoBehaviour {
     private float redox;
     public float start;
     public float redoxl;
+    private Vector3 size;
     private bool click = false; //comprobar el estado del mouse
     private bool destr = false; //determina si el objeto es destructible o no
     private bool cread = false; //determina si ya se creó la siguiente pelotita
@@ -34,7 +35,7 @@ public class pelotita : MonoBehaviour {
 
     void Start() {
         au = GameObject.FindGameObjectWithTag("au");
-        redox = .3f;
+        redox = .03f;
         rb = this.GetComponent<Rigidbody2D>(); //inicializar rigid body
         rb.isKinematic = true; //cancela el movimiento inicial
         lin = this.GetComponent<LineRenderer>(); //inicializa la linea
@@ -43,9 +44,9 @@ public class pelotita : MonoBehaviour {
         col = this.GetComponent<Collider2D>(); //obtiene el collider
         col.isTrigger = true; //elimina collisiones mientras se apunta
         rnd = this.GetComponent<SpriteRenderer>();
+        if (this.transform.localScale.x > .03) this.transform.localScale = new Vector3(this.transform.localScale.x - redox, this.transform.localScale.y - redox, 1);
         sprite = chooseSprite();
         rnd.sprite = sprite;
-        if (this.transform.localScale.x > .3) this.transform.localScale=new Vector3(this.transform.localScale.x - redox ,this.transform.localScale.y - redox, 1);
         a = au.GetComponents<AudioSource>();
 
     }
@@ -108,28 +109,29 @@ public class pelotita : MonoBehaviour {
             if (other.gameObject.tag == "bund") a[0].Play();
         }
     }
-	
-	void Update () {
-        if (this.transform.position.y < cam.transform.position.y - 5){//reinicia el nivel si se cumple la condición de derrota
+
+    void Update() {
+        if (this.transform.position.y < cam.transform.position.y - 5) {//reinicia el nivel si se cumple la condición de derrota
             a[2].Play();
             Application.LoadLevel("Malavares");
-            
-         } 
-        if (this.transform.position.y >= cam.transform.position.y + 4) cam.transform.position = 
+
+        }
+        if (this.transform.position.y >= cam.transform.position.y + 4) cam.transform.position =
                 new Vector3(cam.transform.position.x, this.transform.position.y - 4, -10); //mueve la camara para seguir esta pelota
         if (rb.isKinematic) {
-            this.transform.position=new Vector2(this.transform.position.x, cam.transform.position.y-2); //se asegura que la pelota se mantenga en posición con la cámara mientras no se lanza
+            this.transform.position = new Vector2(this.transform.position.x, cam.transform.position.y - 2); //se asegura que la pelota se mantenga en posición con la cámara mientras no se lanza
 
         }
         next = rb.velocity;
-        if (click){
+        if (click) {
             piv1 = new Vector3(this.transform.position.x, this.transform.position.y, 0); //crea el primer pivote para la linea
             piv2 = cam.ScreenToWorldPoint(Input.mousePosition); //crea el segundo pivote para la linea
             piv2.z = 0;
             lin.SetPosition(0, piv1); //crea la linea
             lin.SetPosition(1, piv2); //crea la linea
         }
-        if (.8 > Time.timeSinceLevelLoad - inter && Time.timeSinceLevelLoad - inter > .7 && !rb.isKinematic && !cread && !destr){
+        int count = GameObject.FindGameObjectsWithTag("Pelotita").Length;
+        if (.8 > Time.timeSinceLevelLoad - inter && Time.timeSinceLevelLoad - inter > .7 && !rb.isKinematic && !cread && !destr && count<2){
             cread = true; //declara que se ha creado la siguiente pelotita
             destr = true; //hace esta pelota destructible
             Sprite nuevo = (Sprite)Instantiate(this, new Vector2(cam.transform.position.x, cam.transform.position.y-2), transform.rotation); //crea el siguiente objeto
