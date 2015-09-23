@@ -68,8 +68,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Assets\Script\movercam.cs" />
-    <Compile Include="Assets\Script\pruebapelotita.cs" />
+    <Compile Include="Assets\Script\pelotita.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\SyntaxTree\UnityVS\2015\UnityVS.CSharp.targets" />
 </Project>
