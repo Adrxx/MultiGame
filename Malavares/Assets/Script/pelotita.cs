@@ -17,6 +17,7 @@ public class pelotita : MonoBehaviour {
     private SpriteRenderer rnd;
     private float escalar = .2f; //escalar para el vector de velocidad de disparo
     private float inter; //intervalo de tiempo para la creación de la siguiente pelotita
+    private float redox;
     private bool click = false; //comprobar el estado del mouse
     private bool destr = false; //determina si el objeto es destructible o no
     private bool cread = false; //determina si ya se creó la siguiente pelotita
@@ -28,6 +29,7 @@ public class pelotita : MonoBehaviour {
 
 
     void Start() {
+        redox = .3f;
         rb = this.GetComponent<Rigidbody2D>(); //inicializar rigid body
         rb.isKinematic = true; //cancela el movimiento inicial
         lin = this.GetComponent<LineRenderer>(); //inicializa la linea
@@ -38,6 +40,8 @@ public class pelotita : MonoBehaviour {
         rnd = this.GetComponent<SpriteRenderer>();
         sprite = chooseSprite();
         rnd.sprite = sprite;
+        if (this.transform.localScale.x > .3) this.transform.localScale=new Vector3(this.transform.localScale.x - redox ,this.transform.localScale.y - redox, 1);
+        
     }
 
 
@@ -110,6 +114,7 @@ public class pelotita : MonoBehaviour {
             cread = true; //declara que se ha creado la siguiente pelotita
             destr = true; //hace esta pelota destructible
             Sprite nuevo = (Sprite)Instantiate(this, new Vector2(cam.transform.position.x, cam.transform.position.y-2), transform.rotation); //crea el siguiente objeto
+            
         }
     }
 }
