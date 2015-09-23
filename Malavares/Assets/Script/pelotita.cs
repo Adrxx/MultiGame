@@ -15,9 +15,13 @@ public class pelotita : MonoBehaviour {
     private LineRenderer lin; //saca una línea para disparar
     private Collider2D col; //llama al colisionador
     private SpriteRenderer rnd;
+    private GameObject au;
+    private AudioSource[] a;
     private float escalar = .2f; //escalar para el vector de velocidad de disparo
     private float inter; //intervalo de tiempo para la creación de la siguiente pelotita
     private float redox;
+    public float start;
+    public float redoxl;
     private bool click = false; //comprobar el estado del mouse
     private bool destr = false; //determina si el objeto es destructible o no
     private bool cread = false; //determina si ya se creó la siguiente pelotita
@@ -29,6 +33,7 @@ public class pelotita : MonoBehaviour {
 
 
     void Start() {
+        au = GameObject.FindGameObjectWithTag("au");
         redox = .3f;
         rb = this.GetComponent<Rigidbody2D>(); //inicializar rigid body
         rb.isKinematic = true; //cancela el movimiento inicial
@@ -41,7 +46,8 @@ public class pelotita : MonoBehaviour {
         sprite = chooseSprite();
         rnd.sprite = sprite;
         if (this.transform.localScale.x > .3) this.transform.localScale=new Vector3(this.transform.localScale.x - redox ,this.transform.localScale.y - redox, 1);
-        
+        a = au.GetComponents<AudioSource>();
+
     }
 
 
@@ -63,13 +69,15 @@ public class pelotita : MonoBehaviour {
 
     void OnMouseDown() {
         pos1 = Input.mousePosition; //toma el primer pivote para el drag
-        lin.SetWidth(.7f, .1f);
+        lin.SetWidth(start-redoxl, .1f);
+        a[1].Play();
         click = true; 
     }
 
     void OnMouseUp() {
         if (rb.isKinematic)
         {
+            a[3].Play();
             col.isTrigger = false;
             click = false;
             rb.isKinematic = false; //activa el movimiento
@@ -83,19 +91,30 @@ public class pelotita : MonoBehaviour {
     }
 
     void OnCollisionEnter2D(Collision2D other) {
-        if (other.gameObject.tag == "Pelotita") {
-            if (destr) { //si el objeto actual es destructible, se destruye
+        if (other.gameObject.tag == "Pelotita")
+        {
+            if (destr)
+            { //si el objeto actual es destructible, se destruye
                 Destroy(gameObject);
+                a[4].Play();
             }
-            else{  //si el objeto actual no es destructible, destruye el contrario
+            else
+            {  //si el objeto actual no es destructible, destruye el contrario
                 Destroy(other.gameObject);
                 rb.velocity = next;
             }
         }
+        else {
+            if (other.gameObject.tag == "bund") a[0].Play();
+        }
     }
 	
 	void Update () {
-        if (this.transform.position.y < cam.transform.position.y - 5) Application.LoadLevel("Malavares"); //reinicia el nivel si se cumple la condición de derrota
+        if (this.transform.position.y < cam.transform.position.y - 5){//reinicia el nivel si se cumple la condición de derrota
+            a[2].Play();
+            Application.LoadLevel("Malavares");
+            
+         } 
         if (this.transform.position.y >= cam.transform.position.y + 4) cam.transform.position = 
                 new Vector3(cam.transform.position.x, this.transform.position.y - 4, -10); //mueve la camara para seguir esta pelota
         if (rb.isKinematic) {
