@@ -1,33 +1,61 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System;
 
 public class pelotita : MonoBehaviour {
 
     private Vector2 vector; //inicializar nuevo vector de velocidad de la pelota
-    private Vector2 next;
-    public Vector2 pos1; //declarar el primer pivote para el drag
-    public Vector2 pos2; //declarar el segundo pivote para el drag
-    public Vector3 piv1;
-    public Vector3 piv2;
-    public Rigidbody2D rb; //declarar el rigidbody de la pelota
-    public Camera cam; //obtiene la cámara
-    public LineRenderer lin; //saca una línea para disparar
-    public Collider2D col;
-    public float escalar =1f; //escalar para el vector de velocidad de disparo
-    public float inter;
-    private bool click=false; //comprobar el estado del mouse
-    private bool destr=false; //determina si el objeto es destructible o no
-    private bool cread=false; //determina si ya se creó la siguiente pelotita
+    private Vector2 next; //recupera el vector inicial tras una colisión
+    private Vector2 pos1; //declarar el primer pivote para el drag
+    private Vector2 pos2; //declarar el segundo pivote para el drag
+    private Vector3 piv1; //primer pivote para la linea
+    private Vector3 piv2; //segundo pivote para la linea
+    private Rigidbody2D rb; //declarar el rigidbody de la pelota
+    private Camera cam; //obtiene la cámara
+    private LineRenderer lin; //saca una línea para disparar
+    private Collider2D col; //llama al colisionador
+    private SpriteRenderer rnd;
+    private float escalar = .2f; //escalar para el vector de velocidad de disparo
+    private float inter; //intervalo de tiempo para la creación de la siguiente pelotita
+    private bool click = false; //comprobar el estado del mouse
+    private bool destr = false; //determina si el objeto es destructible o no
+    private bool cread = false; //determina si ya se creó la siguiente pelotita
+    private int i; //indice para escoger sprite
+    public Sprite sprite;
+    public Sprite sprite1;
+    public Sprite sprite2;
+    public Sprite sprite3;
 
-    void Start () {
+
+    void Start() {
         rb = this.GetComponent<Rigidbody2D>(); //inicializar rigid body
-        rb.isKinematic=true; //cancela el movimiento inicial
+        rb.isKinematic = true; //cancela el movimiento inicial
         lin = this.GetComponent<LineRenderer>(); //inicializa la linea
-        lin.transform.position= new Vector3(lin.transform.position.x, lin.transform.position.y, 0);
+        lin.transform.position = new Vector3(lin.transform.position.x, lin.transform.position.y, 0); //mueve el line renderer
         cam = FindObjectOfType<Camera>(); //inicializa la camara
-        col = this.GetComponent<Collider2D>();
-        col.isTrigger=true;
-	}
+        col = this.GetComponent<Collider2D>(); //obtiene el collider
+        col.isTrigger = true; //elimina collisiones mientras se apunta
+        rnd = this.GetComponent<SpriteRenderer>();
+        sprite = chooseSprite();
+        rnd.sprite = sprite;
+    }
+
+
+    Sprite chooseSprite() { 
+        i = (int) Math.Round(UnityEngine.Random.Range(0f,2f));
+        switch (i) {
+           case 0:
+                return sprite1;
+                break;
+           case 1:
+                return sprite2;
+                break;
+            case 2:
+                return sprite3;
+                break;
+        }
+        return null;
+    }
 
     void OnMouseDown() {
         pos1 = Input.mousePosition; //toma el primer pivote para el drag
@@ -38,6 +66,7 @@ public class pelotita : MonoBehaviour {
     void OnMouseUp() {
         if (rb.isKinematic)
         {
+            col.isTrigger = false;
             click = false;
             rb.isKinematic = false; //activa el movimiento
             pos2 = Input.mousePosition;  //toma el segundo pivote para el drag
@@ -45,7 +74,7 @@ public class pelotita : MonoBehaviour {
             rb.velocity = vector; //inicializar velocidad a partir del vector
             lin.SetWidth(0, 0); //desaparece la línea al disparar la pelota
             inter = Time.timeSinceLevelLoad;
-            col.isTrigger = false;
+            
         }
     }
 
