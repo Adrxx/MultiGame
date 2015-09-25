@@ -17,7 +17,7 @@ public class pelotita : MonoBehaviour {
     private SpriteRenderer rnd;
     private GameObject au;
     private AudioSource[] a;
-    private float escalar = .12f; //escalar para el vector de velocidad de disparo
+    private float escalar = .13f; //escalar para el vector de velocidad de disparo
     private float inter; //intervalo de tiempo para la creación de la siguiente pelotita
     private float redox;
     public float start;
@@ -27,10 +27,10 @@ public class pelotita : MonoBehaviour {
     private bool destr = false; //determina si el objeto es destructible o no
     private bool cread = false; //determina si ya se creó la siguiente pelotita
     private int i; //indice para escoger sprite
-    public Sprite sprite;
-    public Sprite sprite1;
-    public Sprite sprite2;
-    public Sprite sprite3;
+	public Sprite[] sprites;
+
+	private bool toNext = false;
+
 
 
     void Start() {
@@ -45,27 +45,27 @@ public class pelotita : MonoBehaviour {
         col.isTrigger = true;
         rnd = this.GetComponent<SpriteRenderer>();
         if (this.transform.localScale.x > .03) this.transform.localScale = new Vector3(this.transform.localScale.x - redox, this.transform.localScale.y - redox, 1);
-        sprite = chooseSprite();
-        rnd.sprite = sprite;
+		rnd.sprite = chooseSprite();
         a = au.GetComponents<AudioSource>();
 
     }
 
+	void goToGameOver()
+	{
+		
+		fader f = GameObject.Find("Fader").GetComponent<fader>();
+		
+		f.endColor = Color.red;
+		
+		f.startUnFade();
+		
+		this.toNext = true;
+		
+	}
+
 
     Sprite chooseSprite() { 
-        i = (int) Math.Round(UnityEngine.Random.Range(0f,2f));
-        switch (i) {
-           case 0:
-                return sprite1;
-                break;
-           case 1:
-                return sprite2;
-                break;
-            case 2:
-                return sprite3;
-                break;
-        }
-        return null;
+		return this.sprites[UnityEngine.Random.Range(0,this.sprites.Length)];
     }
 
     void OnMouseDown() {
@@ -92,8 +92,10 @@ public class pelotita : MonoBehaviour {
     }
 
     void OnCollisionEnter2D(Collision2D other) {
+
         if (other.gameObject.tag == "Pelotita")
         {
+
             rb.velocity = next;
             if (destr)
                 { //si el objeto actual es destructible, se destruye
@@ -103,6 +105,14 @@ public class pelotita : MonoBehaviour {
                 else
                 {  //si el objeto actual no es destructible, destruye el contrario
                     Destroy(other.gameObject);
+
+				
+					GameObject puntaje = GameObject.Find("Puntaje");
+				
+					puntaje p = puntaje.GetComponent<puntaje>();
+				
+					p.addScore();
+			
                 }
             }
         
@@ -113,42 +123,58 @@ public class pelotita : MonoBehaviour {
     }
 
     void Update() {
-        int count = GameObject.FindGameObjectsWithTag("Pelotita").Length;
-        if (rb.isKinematic) Physics2D.IgnoreCollision(col, col, true);
-        if (.8 > Time.timeSinceLevelLoad - inter && Time.timeSinceLevelLoad - inter > .7 && !rb.isKinematic && !cread && !destr && count < 2)
-        {
-            cread = true; //declara que se ha creado la siguiente pelotita
-            destr = true; //hace esta pelota destructible
-            Sprite nuevo = (Sprite)Instantiate(this, new Vector2(cam.transform.position.x, cam.transform.position.y - 2), transform.rotation); //crea el siguiente objeto
 
-        }
 
-        if (.8 > Time.timeSinceLevelLoad - inter && Time.timeSinceLevelLoad - inter > .7 && !rb.isKinematic && !cread && !destr && count<2){
-            cread = true; //declara que se ha creado la siguiente pelotita
-            destr = true; //hace esta pelota destructible
-            Sprite nuevo = (Sprite)Instantiate(this, new Vector2(cam.transform.position.x, cam.transform.position.y-2), transform.rotation); //crea el siguiente objeto
+		fader f = GameObject.Find("Fader").GetComponent<fader>();
+		
+		if (this.toNext) {
+			
+			Debug.Log (f.isInStartColor);
+			if (!f.isInStartColor)
+				Application.LoadLevel ("Tabla");
+			
+		} else {
+
+
+			int count = GameObject.FindGameObjectsWithTag ("Pelotita").Length;
+			if (rb.isKinematic)
+				Physics2D.IgnoreCollision (col, col, true);
+			if (.8 > Time.timeSinceLevelLoad - inter && Time.timeSinceLevelLoad - inter > .7 && !rb.isKinematic && !cread && !destr && count < 2) {
+				cread = true; //declara que se ha creado la siguiente pelotita
+				destr = true; //hace esta pelota destructible
+				Sprite nuevo = (Sprite)Instantiate (this, new Vector2 (cam.transform.position.x, cam.transform.position.y - 2), transform.rotation); //crea el siguiente objeto
+
+			}
+
+			if (.8 > Time.timeSinceLevelLoad - inter && Time.timeSinceLevelLoad - inter > .7 && !rb.isKinematic && !cread && !destr && count < 2) {
+				cread = true; //declara que se ha creado la siguiente pelotita
+				destr = true; //hace esta pelota destructible
+				Sprite nuevo = (Sprite)Instantiate (this, new Vector2 (cam.transform.position.x, cam.transform.position.y - 2), transform.rotation); //crea el siguiente objeto
             
-        }
+			}
 
-        if (this.transform.position.y < cam.transform.position.y - 5) {//reinicia el nivel si se cumple la condición de derrota
-            a[2].Play();
-            Application.LoadLevel("Malavares");
+			if (this.transform.position.y < cam.transform.position.y - 5) {//reinicia el nivel si se cumple la condición de derrota
+				a [2].Play ();
+				goToGameOver();
 
-        }
-        if (this.transform.position.y >= cam.transform.position.y + 4) cam.transform.position =
-                new Vector3(cam.transform.position.x, this.transform.position.y - 4, -10); //mueve la camara para seguir esta pelota
-        if (rb.isKinematic) {
-            this.transform.position = new Vector2(this.transform.position.x, cam.transform.position.y - 2); //se asegura que la pelota se mantenga en posición con la cámara mientras no se lanza
+			}
+			if (this.transform.position.y >= cam.transform.position.y + 4)
+				cam.transform.position =
+                new Vector3 (cam.transform.position.x, this.transform.position.y - 4, -10); //mueve la camara para seguir esta pelota
+			if (rb.isKinematic) {
+				this.transform.position = new Vector2 (this.transform.position.x, cam.transform.position.y - 2); //se asegura que la pelota se mantenga en posición con la cámara mientras no se lanza
 
-        }
-        next = rb.velocity;
-        if (click) {
-            piv1 = new Vector3(this.transform.position.x, this.transform.position.y, 0); //crea el primer pivote para la linea
-            piv2 = cam.ScreenToWorldPoint(Input.mousePosition); //crea el segundo pivote para la linea
-            piv2.z = 0;
-            lin.SetPosition(0, piv1); //crea la linea
-            lin.SetPosition(1, piv2); //crea la linea
-        }
+			}
+			next = rb.velocity;
+			if (click) {
+				piv1 = new Vector3 (this.transform.position.x, this.transform.position.y, 0); //crea el primer pivote para la linea
+				piv2 = cam.ScreenToWorldPoint (Input.mousePosition); //crea el segundo pivote para la linea
+				piv2.z = 0;
+				lin.SetPosition (0, piv1); //crea la linea
+				lin.SetPosition (1, piv2); //crea la linea
+			}
+
+		}
         
     }
 }
